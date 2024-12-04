@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title|default('Template Server') }}</title>
+    <script>
+        window.__INITIAL_STATE__ = JSON.parse('{{ initial_state|tojson|safe }}');
+    </script>
+</head>
+<body>
+    <div id="app">
+        {% include 'components/header.html' %}
+        
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
