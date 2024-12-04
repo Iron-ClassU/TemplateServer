@@ -1,0 +1,201 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyo
+*.pyd
+*.dll
+*.dylib
+*.exe
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv
+.python-version
+pyvenv.cfg
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
+.classpath
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+.spyderproject
+.spyproject
+.ropeproject
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite3-journal
+dashboard_generator.db
+dashboard_generator.db-journal
+
+# Logs and debugging
+*.log
+logs/
+log/
+logging/
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+.testmondata
+.tmontmp
+
+# Translations and Documentation
+docs/_build/
+docs/build/
+site/
+_build/
+*.mo
+*.pot
+local_docs/
+
+# Environment and local settings
+.env*
+.env.local
+.env.development
+.env.test
+.env.production
+local_settings.py
+instance/
+*.cfg
+!alembic.ini
+settings_local.py
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Node.js (Frontend)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+.npm
+.yarn
+
+# FastAPI specific
+__pycache__/
+*.pyc
+.env
+.venv/
+
+# Alembic
+versions/__pycache__/
+versions/*.pyc
+
+# Project specific
+.dashboard_cache/
+generated_dashboards/
+template_cache/
+custom_components/
+user_uploads/
+temp/
+.backup/
+data/
+output/
+results/
+.history/
+.tmp/
+
+# System Files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+._*
+.Spotlight-V100
+.Trashes
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Security and secrets
+*.pem
+*.key
+*.cert
+*.crt
+.secrets/
+credentials/
+.ssh/
+
+# Profiling and benchmarking
+*.prof
+*.stats
+profile_results/
+benchmark_results/
+
+# Dependency management
+poetry.lock
+Pipfile.lock
+requirements.txt.md5
+
+# Docker
+.docker/
+docker-compose.override.yml
+*.env.docker 
