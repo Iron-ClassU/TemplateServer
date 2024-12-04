@@ -17,12 +17,12 @@ AGI 솔루션의 웹 인터페이스와 API 서비스를 통합 제공하는 시
 ```yaml
 Backend:
   - FastAPI
-  - Jinja2
+  - Jinja2  
   - SQLAlchemy
   - Redis
 
 Database:
-  - PostgreSQL
+  - MySQL
   - Redis Cache
 
 Infrastructure:
@@ -53,7 +53,7 @@ graph TB
     end
     
     subgraph "Data Layer"
-        G --> J[(PostgreSQL)]
+        G --> J[(MySQL)]
         H --> J
         I --> K[(Redis Cache)]
     end
