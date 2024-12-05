@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel
+
 
 class TemplateVersionBase(BaseModel):
     html_content: str
@@ -9,8 +11,10 @@ class TemplateVersionBase(BaseModel):
     config: Optional[Dict[str, Any]] = None
     comment: Optional[str] = None
 
+
 class TemplateVersionCreate(TemplateVersionBase):
     pass
+
 
 class TemplateVersionInDB(TemplateVersionBase):
     id: int
@@ -21,6 +25,7 @@ class TemplateVersionInDB(TemplateVersionBase):
 
     class Config:
         from_attributes = True
+
 
 class VersionComparisonResult(BaseModel):
     version1: int

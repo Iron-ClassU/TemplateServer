@@ -1,7 +1,9 @@
-from typing import Dict, Any, Optional
-from jinja2 import Environment, Template as Jinja2Template, TemplateError
 import hashlib
 import json
+from typing import Any, Dict, Optional
+
+from jinja2 import Environment, TemplateError
+
 
 class RenderService:
     def __init__(self, cache_enabled: bool = False):
@@ -36,11 +38,11 @@ class RenderService:
         css_content: Optional[str] = None,
         js_content: Optional[str] = None,
         context: Dict[str, Any] = None,
-        template_id: Optional[int] = None
+        template_id: Optional[int] = None,
     ) -> str:
         """Render a template with given context and optional CSS/JS."""
         context = context or {}
-        
+
         # Check cache if template_id is provided
         if template_id and self.cache_enabled:
             cache_key = self._get_cache_key(template_id, context)
@@ -56,15 +58,13 @@ class RenderService:
             # Inject CSS if present
             if css_content:
                 rendered_html = rendered_html.replace(
-                    "</head>",
-                    f"<style>{css_content}</style></head>"
+                    "</head>", f"<style>{css_content}</style></head>"
                 )
 
             # Inject JS if present
             if js_content:
                 rendered_html = rendered_html.replace(
-                    "</body>",
-                    f"<script>{js_content}</script></body>"
+                    "</body>", f"<script>{js_content}</script></body>"
                 )
 
             # Cache the result if template_id is provided
@@ -83,19 +83,13 @@ class RenderService:
         """Validate Jinja2 template syntax."""
         try:
             self.env.parse(html_content)
-            return {
-                "is_valid": True,
-                "errors": []
-            }
+            return {"is_valid": True, "errors": []}
         except Exception as e:
-            return {
-                "is_valid": False,
-                "errors": [str(e)]
-            }
+            return {"is_valid": False, "errors": [str(e)]}
 
     def clear_cache(self, template_id: Optional[int] = None) -> None:
         """Clear the render cache.
-        
+
         Args:
             template_id: If provided, only clear cache for this template.
                        If None, clear entire cache.
@@ -106,8 +100,7 @@ class RenderService:
         if template_id:
             # Clear specific template cache
             keys_to_remove = [
-                k for k in self.cache.keys()
-                if k.startswith(f"template:{template_id}:")
+                k for k in self.cache.keys() if k.startswith(f"template:{template_id}:")
             ]
             for key in keys_to_remove:
                 self.cache.pop(key, None)
@@ -121,25 +114,25 @@ class RenderService:
             ast = self.env.parse(html_content)
             variables = set()
             blocks = set()
-            
+
             def visit_node(node):
-                if hasattr(node, 'name'):
-                    if node.name == 'block':
+                if hasattr(node, "name"):
+                    if node.name == "block":
                         blocks.add(node.name)
                     else:
                         variables.add(node.name)
                 for child in node.iter_child_nodes():
                     visit_node(child)
-            
+
             visit_node(ast)
-            
+
             return {
                 "variables": sorted(list(variables)),
                 "blocks": sorted(list(blocks)),
                 "has_extends": any(
-                    node.__class__.__name__ == 'Extends'
+                    node.__class__.__name__ == "Extends"
                     for node in ast.iter_child_nodes()
-                )
+                ),
             }
         except Exception as e:
             raise ValueError(f"Error analyzing template: {str(e)}")
@@ -152,7 +145,7 @@ class RenderService:
             if "list" in var.lower() or "items" in var.lower():
                 context[var] = [
                     {"id": 1, "name": "Item 1"},
-                    {"id": 2, "name": "Item 2"}
+                    {"id": 2, "name": "Item 2"},
                 ]
             elif "date" in var.lower():
                 context[var] = "2024-01-01"
@@ -164,5 +157,5 @@ class RenderService:
                 context[var] = 42
             else:
                 context[var] = f"Sample {var}"
-        
-        return context 
+
+        return context

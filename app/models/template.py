@@ -1,8 +1,12 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, JSON, ForeignKey, Enum as SQLEnum
-from sqlalchemy.sql import func
+from sqlalchemy import JSON, Boolean, Column, DateTime
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
 from app.models.base import Base
-from app.schemas.template import TemplateType, TemplateStatus
+from app.schemas.template import TemplateStatus, TemplateType
+
 
 class Template(Base):
     __tablename__ = "templates"
@@ -17,11 +21,11 @@ class Template(Base):
     type = Column(SQLEnum(TemplateType), default=TemplateType.DASHBOARD)
     status = Column(SQLEnum(TemplateStatus), default=TemplateStatus.DRAFT)
     tags = Column(JSON, nullable=True)  # Store as JSON array
-    parent_id = Column(Integer, ForeignKey('templates.id'), nullable=True)
+    parent_id = Column(Integer, ForeignKey("templates.id"), nullable=True)
     version_notes = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now)
     created_by = Column(Integer, nullable=True)  # User ID reference
     updated_by = Column(Integer, nullable=True)  # User ID reference
     version = Column(Integer, default=1)
@@ -31,4 +35,4 @@ class Template(Base):
     routes = relationship("Route", back_populates="template")
 
     def __repr__(self):
-        return f"<Template {self.name} (v{self.version})>" 
+        return f"<Template {self.name} (v{self.version})>"

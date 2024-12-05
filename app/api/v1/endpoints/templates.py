@@ -1,29 +1,29 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Body, Path
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
-from datetime import datetime
+
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.base import get_session
-from app.services.template_service import TemplateService
 from app.schemas.template import (
     TemplateCreate,
-    TemplateUpdate,
     TemplateInDB,
     TemplatePreview,
-    TemplateStats,
-    TemplateValidationResult,
     TemplateRenderRequest,
     TemplateRenderResult,
+    TemplateStats,
+    TemplateStatus,
     TemplateType,
-    TemplateStatus
+    TemplateUpdate,
+    TemplateValidationResult,
 )
+from app.services.template_service import TemplateService
 
 router = APIRouter()
 
+
 @router.post("/", response_model=TemplateInDB)
 async def create_template(
-    template: TemplateCreate,
-    session: AsyncSession = Depends(get_session)
+    template: TemplateCreate, session: AsyncSession = Depends(get_session)
 ):
     """Create a new template."""
     template_service = TemplateService(session)
@@ -31,6 +31,7 @@ async def create_template(
         return await template_service.create_template(template)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @router.get("/", response_model=List[TemplatePreview])
 async def list_templates(
@@ -40,23 +41,18 @@ async def list_templates(
     status: Optional[TemplateStatus] = None,
     tag: Optional[str] = None,
     search: Optional[str] = None,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     """List all templates with filtering and search."""
     template_service = TemplateService(session)
     return await template_service.get_templates(
-        skip=skip,
-        limit=limit,
-        type=type,
-        status=status,
-        tag=tag,
-        search=search
+        skip=skip, limit=limit, type=type, status=status, tag=tag, search=search
     )
+
 
 @router.get("/{template_id}", response_model=TemplateInDB)
 async def get_template(
-    template_id: int = Path(..., gt=0),
-    session: AsyncSession = Depends(get_session)
+    template_id: int = Path(..., gt=0), session: AsyncSession = Depends(get_session)
 ):
     """Get a specific template by ID."""
     template_service = TemplateService(session)
@@ -65,11 +61,12 @@ async def get_template(
         raise HTTPException(status_code=404, detail="Template not found")
     return template
 
+
 @router.put("/{template_id}", response_model=TemplateInDB)
 async def update_template(
     template_id: int = Path(..., gt=0),
     template: TemplateUpdate = Body(...),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     """Update a template."""
     template_service = TemplateService(session)
@@ -81,10 +78,10 @@ async def update_template(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @router.delete("/{template_id}")
 async def delete_template(
-    template_id: int = Path(..., gt=0),
-    session: AsyncSession = Depends(get_session)
+    template_id: int = Path(..., gt=0), session: AsyncSession = Depends(get_session)
 ):
     """Delete a template."""
     template_service = TemplateService(session)
@@ -92,10 +89,10 @@ async def delete_template(
         raise HTTPException(status_code=404, detail="Template not found")
     return {"message": "Template deleted successfully"}
 
+
 @router.post("/{template_id}/validate", response_model=TemplateValidationResult)
 async def validate_template(
-    template_id: int = Path(..., gt=0),
-    session: AsyncSession = Depends(get_session)
+    template_id: int = Path(..., gt=0), session: AsyncSession = Depends(get_session)
 ):
     """Validate a template."""
     template_service = TemplateService(session)
@@ -104,30 +101,28 @@ async def validate_template(
         raise HTTPException(status_code=404, detail="Template not found")
     return await template_service.validate_template(template)
 
+
 @router.post("/{template_id}/render", response_model=TemplateRenderResult)
 async def render_template(
     template_id: int = Path(..., gt=0),
     render_request: TemplateRenderRequest = Body(...),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     """Render a template with provided context."""
     template_service = TemplateService(session)
     try:
         return await template_service.render_template(
-            template_id=template_id,
-            context=render_request.context,
-            preview=render_request.preview,
-            validate=render_request.validate
+            template_id, render_request.context
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.get("/{template_id}/stats", response_model=TemplateStats)
 async def get_template_stats(
-    template_id: int = Path(..., gt=0),
-    session: AsyncSession = Depends(get_session)
+    template_id: int = Path(..., gt=0), session: AsyncSession = Depends(get_session)
 ):
     """Get usage statistics for a template."""
     template_service = TemplateService(session)
@@ -136,56 +131,34 @@ async def get_template_stats(
         raise HTTPException(status_code=404, detail="Template not found")
     return await template_service.get_template_stats(template_id)
 
+
 @router.put("/{template_id}/status")
 async def update_template_status(
     template_id: int = Path(..., gt=0),
     status: TemplateStatus = Body(...),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     """Update template status (draft/published/archived)."""
     template_service = TemplateService(session)
     try:
-        updated = await template_service.update_template_status(template_id, status)
+        updated = await template_service.update_template(
+            template_id, TemplateUpdate(status=status)
+        )
         if not updated:
             raise HTTPException(status_code=404, detail="Template not found")
         return {"message": f"Template status updated to {status}"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/{template_id}/duplicate", response_model=TemplateInDB)
-async def duplicate_template(
-    template_id: int = Path(..., gt=0),
-    name: str = Body(...),
-    session: AsyncSession = Depends(get_session)
-):
-    """Create a duplicate of a template."""
-    template_service = TemplateService(session)
-    try:
-        return await template_service.duplicate_template(template_id, name)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@router.get("/{template_id}/dependencies", response_model=List[dict])
-async def get_template_dependencies(
-    template_id: int = Path(..., gt=0),
-    session: AsyncSession = Depends(get_session)
-):
-    """Get all dependencies of a template."""
-    template_service = TemplateService(session)
-    template = await template_service.get_template(template_id)
-    if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
-    return await template_service.get_template_dependencies(template_id)
 
 @router.get("/types", response_model=List[str])
 async def list_template_types():
     """List all available template types."""
     return [t.value for t in TemplateType]
 
+
 @router.get("/tags", response_model=List[str])
-async def list_template_tags(
-    session: AsyncSession = Depends(get_session)
-):
+async def list_template_tags(session: AsyncSession = Depends(get_session)):
     """List all used template tags."""
     template_service = TemplateService(session)
-    return await template_service.get_all_tags() 
+    return await template_service.get_all_tags()

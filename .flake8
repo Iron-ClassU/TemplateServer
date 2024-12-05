@@ -1,0 +1,20 @@
+[flake8]
+# Project-specific overrides
+extend-ignore =
+    # Ignore specific errors in service files
+    app/services/*: B008
+    # Ignore specific errors in endpoint files
+    app/api/v1/endpoints/*: B008,E501
+
+# Additional application paths
+application-import-names =
+    app.api
+    app.core
+    app.models
+    app.schemas
+    app.services
+
+# Statistics output format
+statistics = True
+count = True
+show-source = True 

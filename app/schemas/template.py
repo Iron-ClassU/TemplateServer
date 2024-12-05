@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, validator
-from typing import Optional, Dict, Any, List
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
+
 
 class TemplateType(str, Enum):
     DASHBOARD = "dashboard"
@@ -9,10 +11,12 @@ class TemplateType(str, Enum):
     WIDGET = "widget"
     LAYOUT = "layout"
 
+
 class TemplateStatus(str, Enum):
     DRAFT = "draft"
     PUBLISHED = "published"
     ARCHIVED = "archived"
+
 
 class TemplateConfig(BaseModel):
     type: TemplateType
@@ -22,6 +26,7 @@ class TemplateConfig(BaseModel):
     data_bindings: Optional[Dict[str, Any]] = None
     permissions: Optional[Dict[str, Any]] = None
     settings: Optional[Dict[str, Any]] = None
+
 
 class TemplateBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
@@ -35,8 +40,10 @@ class TemplateBase(BaseModel):
     parent_id: Optional[int] = None  # For template inheritance
     version_notes: Optional[str] = None
 
+
 class TemplateCreate(TemplateBase):
     pass
+
 
 class TemplateUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=100)
@@ -50,6 +57,7 @@ class TemplateUpdate(BaseModel):
     is_active: Optional[bool] = None
     version_notes: Optional[str] = None
 
+
 class TemplateInDB(TemplateBase):
     id: int
     is_active: bool
@@ -62,6 +70,7 @@ class TemplateInDB(TemplateBase):
     class Config:
         from_attributes = True
 
+
 class TemplatePreview(BaseModel):
     id: int
     name: str
@@ -73,6 +82,7 @@ class TemplatePreview(BaseModel):
     updated_at: Optional[datetime]
     version: int
 
+
 class TemplateStats(BaseModel):
     total_routes: int
     active_routes: int
@@ -81,12 +91,14 @@ class TemplateStats(BaseModel):
     avg_render_time: Optional[float]
     error_count: int
 
+
 class TemplateDependency(BaseModel):
     template_id: int
     name: str
     type: str
     is_required: bool
     default_value: Optional[Any] = None
+
 
 class TemplateValidationResult(BaseModel):
     is_valid: bool
@@ -95,15 +107,17 @@ class TemplateValidationResult(BaseModel):
     dependencies: Optional[List[TemplateDependency]] = None
     metadata: Optional[Dict[str, Any]] = None
 
+
 class TemplateRenderRequest(BaseModel):
     template_id: int
     context: Dict[str, Any]
     preview: bool = False
-    validate: bool = True
+    is_valid: bool = True
+
 
 class TemplateRenderResult(BaseModel):
     html: str
     css: Optional[str] = None
     js: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
-    render_time: float 
+    render_time: float

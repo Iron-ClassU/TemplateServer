@@ -3,13 +3,7 @@ SQLAlchemy models for Dashboard Generator.
 """
 
 from .base import Base
-from .template import Template
 from .route import Route
-from .data import DataSource
+from .template import Template
 
-__all__ = [
-    "Base",
-    "Template",
-    "Route",
-    "DataSource"
-] 
+__all__ = ["Base", "Template", "Route"]
